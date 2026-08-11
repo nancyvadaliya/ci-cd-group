@@ -1,0 +1,33 @@
+name: code cd 
+
+on:
+   workflow_dispatch:
+
+  
+  
+    jobs:
+     deploy:
+       runs-on: ubuntu-latest
+
+
+
+      steps:
+      -name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.2.2
+      with: 
+        host: ${{secrets.EC2}}
+        username: ${{secrets.EC2_USER}}
+        key: ${{secrets.EC2_SSH_KEY}}
+
+        script: |
+
+            docker pull YOUR_DOCKERHUB_USERNAME/spring-petclinic:latest
+
+            docker stop spring-petclinic || true
+
+            docker rm spring-petclinic || true
+
+            docker run -d \
+              --name spring-petclinic \
+              -p 8080:8080 \
+              YOUR_DOCKERHUB_USERNAME/spring-petclinic:latest
